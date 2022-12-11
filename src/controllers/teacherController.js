@@ -116,7 +116,7 @@ const login = async function (req, res) {
 
 const getStudent = async function (req, res) {
     try {
-        let { name, subject, marks, ...rest } = req.query
+        let { name, subject, marks, marksGreaterThan, marksLessThan, ...rest } = req.query
 
         if (Object.keys(rest).length != 0) {
             return res.status(400).send({ status: false, message: "Filter data through keys => name, subject, marks, marksGreaterThan, marksLessThan" });
@@ -128,7 +128,8 @@ const getStudent = async function (req, res) {
         if (name) {
             if (!isValidName(name))
                 return res.status(400).send({ status: false, message: "Invalid name" });
-            data.name = name;
+            const regexForName = new RegExp(name, "i");
+            data.name = { $regex: regexForName };
         }
         if (subject) {
             if (!isValidName(subject))
@@ -140,7 +141,21 @@ const getStudent = async function (req, res) {
                 return res.status(400).send({ status: false, message: "Invalid marks" });
             data.marks = marks
         }
-
+        if (marksGreaterThan) {
+            if (!isValidMark(marksGreaterThan)) {
+                return res.status(400).send({ status: false, message: "Marks can only be integer" });
+            }
+            data.marks = { $gt: marksGreaterThan };
+        }
+        if (marksLessThan) {
+            if (!isValidMark(marksLessThan)) {
+                return res.status(400).send({ status: false, message: "Marks can only be integer" });
+            }
+            data.marks = { $lt: marksLessThan };
+        }
+        if (marksGreaterThan && marksLessThan) {
+            data.marks = { $gt: marksGreaterThan, $lt: marksLessThan };
+        }
         let allStudents = await studentModel.find({ $and: [data, { teacherId: userId, isDeleted: false }] });
 
         if (allStudents.length == 0) {
