@@ -29,7 +29,11 @@ const createStudent = async function (req, res) {
             return res.status(400).send({ status: false, message: "Pleas provide required details only (name, teacherId, subject and marks)" })
         }
 
-        if (req.validateToken.userId != teacherId)
+        if (!teacherId)
+        return res.status(400).send({ status: false, message: "teacherId is required" });
+        if (!ObjectId.isValid(teacherId)) return res.status(400).send({ status: false, msg: "Invalid teacherId" })
+
+        if (req.token.userId != teacherId)
             return res.status(403).send({ status: false, message: "unauthorized" });
 
         if (!name)
@@ -40,7 +44,6 @@ const createStudent = async function (req, res) {
             return res.status(400).send({ status: false, message: "marks is required" });
 
         if (!isValidName(name)) return res.status(400).send({ status: false, message: "Invalid name" });
-        if (!ObjectId.isValid(teacherId)) return res.status(400).send({ status: false, msg: "Invalid teacherId" })
         if (!isValidName(subject)) return res.status(400).send({ status: false, message: "Invalid subject" });
         if (!isValidMark(marks)) return res.status(400).send({ status: false, message: "Invalid marks" });
 

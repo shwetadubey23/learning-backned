@@ -6,26 +6,34 @@ const studentModel = require('../models/studentModel')
 
 const authentication = async (req, res, next) => {
     try {
-        let token = req.headers['x-api-key']
-        if (!token) return res.status(402).send({ status: false, msg: "token must be present" })
-
-        let validateToken = jwt.verify(token, "student_result")
-        if (!validateToken) return res.status(402).send({ status: false, msg: "invalid token" })
-
-        req.validateToken = validateToken
-
-        next()
+      let token = req.headers.authorization;
+      if (!token)
+        return res
+          .status(401)
+          .send({ status: false, msg: "token must be present" });
+  
+      token = token.replace(/^Bearer\s+/, "");
+  
+      jwt.verify(token, "student_result", function (error, validToken) {
+        if (error) {
+          return res.status(401).send({ status: false, msg: error.message });
+        } else {
+          req.token = validToken;
+          next();
+        }
+      });
+  
     } catch (err) {
-        res.status(500).send({ status: "error", error: err.message });
+      res.status(500).send({ status: "error", error: err.message });
     }
-}
+  };
 
 //////////////////////////////////////////////////// Authorisation ///////////////////////////////////////////////////////
 
 const authorisation = async (req, res, next) => {
 
     try {
-        let loggedInUser = req.validateToken.userId
+        let loggedInUser = req.token.userId
 
         let studentId = req.params.studentId
         if (!ObjectId.isValid(studentId)) return res.status(400).send({ status: false, msg: "Invalid studentId" })

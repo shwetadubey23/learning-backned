@@ -42,13 +42,13 @@ const createTeacher = async function (req, res) {
         }
 
         if (!name)
-            return res.status(400).send({ status: false, message: "fname is required" });
+            return res.status(400).send({ status: false, message: "name is required" });
         if (!email)
             return res.status(400).send({ status: false, message: "email is required" });
         if (!password)
             return res.status(400).send({ status: false, message: "password is required" });
 
-        if (!isValidName(name)) return res.status(400).send({ status: false, message: "Invalid fname" });
+        if (!isValidName(name)) return res.status(400).send({ status: false, message: "Invalid name" });
         if (!isValidEmail(email)) return res.status(400).send({ status: false, message: "Invalid email" });
         if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Password must have 8 to 15 characters with at least one lowercase, uppercase, numeric value and a special character" });
 
@@ -122,7 +122,7 @@ const getStudent = async function (req, res) {
             return res.status(400).send({ status: false, message: "Filter data through keys => name, subject, marks, marksGreaterThan, marksLessThan" });
         }
 
-        let userId = req.validateToken.userId
+        let userId = req.token.userId
         let data = { isDeleted: false }
 
         if (name) {
@@ -156,7 +156,7 @@ const getStudent = async function (req, res) {
         if (marksGreaterThan && marksLessThan) {
             data.marks = { $gt: marksGreaterThan, $lt: marksLessThan };
         }
-        let allStudents = await studentModel.find({ $and: [data, { teacherId: userId, isDeleted: false }] });
+        let allStudents = await studentModel.find({ $and: [data, { teacherId: userId }] });// isDelted : fales uper bhi likh sakte hain ya yahan bhi
 
         if (allStudents.length == 0) {
             return res.status(404).send({ status: false, message: "No student found" });
@@ -194,12 +194,12 @@ const updateStudents = async function (req, res) {
         }
 
         if (marks) {
-            if (!isValidMark(studentDetail.marks)) return res.status(400).send({ status: false, message: "Invalid marks" });
+            if (!isValidMark(marks)) return res.status(400).send({ status: false, message: "Invalid marks" });
         }
 
         let updateStudents = await studentModel.findOneAndUpdate(
             { _id: studentId, isDeleted: false },
-            { $set: { name: studentDetail.name, subject: studentDetail.subject, marks: studentDetail.marks } }, { new: true }
+            { $set: { name: name, marks: marks } }, { new: true }
         )
 
         return res.status(200).send({ status: false, message: updateStudents })
