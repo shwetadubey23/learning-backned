@@ -9,10 +9,9 @@ const createAuthor = async (req, res) => {
     try {
 
         let author = req.body;
-        let{fname, lname, title, email, password, ...rest} = req.body
+        let{fname, lname, title, email, password } = req.body
 
         if (Object.keys(author).length == 0) return res.status(400).send({ status: false, msg: "please provide details"})
-        if(Object.keys(rest).length != 0) return res.status(400).send({ status: false, msg: "please provide required details only =>fname, lname, title, email and password "})
 
         if (!fname) return res.status(400).send({ status: false, msg: "First name is required" });
         if (!lname) return res.status(400).send({ status: false, msg: "Last name is required" });
@@ -48,7 +47,7 @@ const login = async (req, res) => {
         let credentials = req.body
         let { email, password } = credentials
         
-        if (!email && !password) return res.status(404).send({ status: false, msg: "please enter EmailId and Password" })
+        if (!email || !password) return res.status(404).send({ status: false, msg: "please enter EmailId and Password" })
         // if (!email) return res.status(404).send({ status: false, msg: "please enter EmailId" })
         // if (!password) return res.status(404).send({ status: false, msg: "please enter Password" })
 

@@ -102,9 +102,7 @@ const deleteBlogByQueryParam = async (req, res) => {
         if (!filterByQuery) return res.status(404).send({ status: false, msg: "blog doesn't exist" });
 
         if (filterByQuery.isDeleted == true) return res.status(404).send({ status: false, msg: "blog already deleted" });
-
-        // let authorId = JSON.stringify(filterByQuery.authorId)
-        // console.log(typeof(filterByQuery.authorId))
+        
         let userId = req.validateToken.userId
         // console.log(userId)
 
