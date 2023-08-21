@@ -16,11 +16,16 @@ router.post("/authors", AuthorController.createAuthor);
 
 // blogs apis
 router.post("/blogs", Middlewares.authentication, BlogController.createBlog);
+
 router.get("/blogs", Middlewares.authentication, BlogController.getBlogs);
+
 router.put('/blogs/:blogId', Middlewares.authentication, Middlewares.authorization, BlogController.updateBlog);
+
 router.delete('/blogs/:blogId', Middlewares.authentication, Middlewares.authorization, BlogController.deleteBlogById);
+
 router.delete('/blogs', Middlewares.authentication, BlogController.deleteBlogByQueryParam);
 
 
 
 module.exports = router;
+

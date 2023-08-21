@@ -11,7 +11,7 @@ const AuthorSchema = new mongoose.Schema({
   lname: {
     type: String,
     required: true,
-    trim: true
+    trim: true   
   },
 
   title: {
@@ -37,3 +37,4 @@ const AuthorSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 module.exports = mongoose.model('Author', AuthorSchema);
+
